@@ -1,0 +1,49 @@
+[
+  {
+    "email": "amr1999@gmail.com",
+    "password": "vardhan2233"
+  },
+  {
+    "email": "girish1234@gmail.com",
+    "password": "girish123"
+  },
+  {
+    "email": "amrvardhan1999@gmail.com",
+    "password": "vardhan2233"
+  },
+  {
+    "email": "amrvardhan2233@gmail.com",
+    "password": "vardhan2233",
+    "secret": "HBFDC3KCJF4USQCWEVDGW5SAEUUUUNTUKQXHGN2SIZHEGOSVKVUQ"
+  },
+  {
+    "email": "girish.usams@gmail.com",
+    "password": "amrvardhan2233",
+    "secret": "GRIGCLRZPASFCXTNMIUFIMZXKVEDMVCMJQ3ECTRTMUSXGR3NNMYA"
+  },
+  {
+    "email": "hello@gmail.com",
+    "password": "abcd@123",
+    "secret": "JQ7WS2LIIZOXUVBKHN4VIQCXMJZDOI2RHZ4CM33GH5PDYJLRLZGQ"
+  },
+  {
+    "email": "girish@gmail.com",
+    "password": "abcd@123",
+    "secret": "JNUCUWBRNBJTMLDMOQYFIQSTLBJXSOD3KFIW24DWO5HW26DVKR6Q"
+  },
+  {
+    "email": "hey@gmail.com",
+    "password": "abcd@123",
+    "secret": "KRHXSOBJGVHUUSDHGVSVE7JBEU5VEMJVNU4UGWZFHNVTC23QFJHA"
+  },
+  {
+    "email": "heroravi@gmail.com",
+    "password": "abcd@123",
+    "secret": "I5JVUOLYGN2UMUBBNNVTUKJ4ORQS65DXKFKHIYLDMIVFCKSLIVKQ"
+  },
+  {
+    "email": "virat@gmail.com",
+    "password": "anushka@123",
+    "secret": "KBHGK5CRFFAVOQDNIJAW2VRDOYXGW2KVJM4HW3J4LMYSCIZWLNGA"
+  }
+]

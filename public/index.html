@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Authentication</title>
+    <style>
+      body {
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          background-color: #e8eff1;
+          margin: 0;
+          padding: 0;
+          display: grid;
+          place-items: center;
+          height: 100vh;
+      }
+
+      .container {
+          background-color: #ffffff;
+          border-radius: 10px;
+          box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+          padding: 40px;
+          text-align: left;
+          width: 350px;
+      }
+
+      h1, h2 {
+          color: #4a5568;
+      }
+
+      form {
+          display: grid;
+          gap: 15px;
+      }
+
+      input[type="email"],
+      input[type="password"],
+      input[type="text"] {
+          width: calc(100% - 20px);
+          padding: 12px;
+          border: 2px solid #cbd5e0;
+          border-radius: 8px;
+      }
+
+      button {
+          background-color: #5a67d8;
+          color: #fff;
+          border: none;
+          border-radius: 8px;
+          padding: 12px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
+      }
+
+      button:disabled {
+          background-color: #a0aec0;
+          cursor: not-allowed;
+      }
+
+      button:hover:not(:disabled) {
+          background-color: #434190;
+      }
+
+      .error {
+          color: #e53e3e;
+          margin: 5px 0;
+      }
+
+      a {
+          color: #5a67d8;
+          transition: color 0.3s ease;
+      }
+
+      a:hover {
+          color: #2c5282;
+          text-decoration: none;
+      }
+  </style>
+</head>
+<body>
+    <link rel="manifest" href="/manifest.json">
+
+    <div class="container">
+        <h1>Sign Up</h1>
+        <form id="signupForm">
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="password" name="password" placeholder="Create Password" required>
+            <button type="submit">Create Account</button>
+        </form>
+        <p class="error" id="signupError">Please check your details and try again.</p>
+
+        <h2>Welcome Back!</h2>
+        <form id="signinForm">
+            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="text" name="otp" placeholder="One-Time Password" required>
+            <button type="submit">Log In</button>
+        </form>
+        <p class="error" id="signinError">Please enter your details.</p>
+        <p id="location">Location: N/A</p>
+        <p id="weather">Weather: N/A</p>
+        <p id="language">Language: N/A</p>
+        <p id="currency">Currency: N/A</p>
+        <p id="facts">Facts: Downtown Visit</p>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Replace with your OpenWeatherMap API key
+        const openWeatherApiKey = '18b23e0cc1e8ed2323d2978fa4c703e8';
+
+        $(document).ready(function () {
+            $('#signupForm').submit(function (event) {
+                event.preventDefault(); // Prevent default form submission for signup
+
+                // Add AJAX request for signup form submission here if needed
+                // Example:
+                // $.ajax({
+                //     type: 'POST',
+                //     url: '/signup',
+                //     data: $(this).serialize(),
+                //     success: function (response) {
+                //         // Handle successful signup
+                //     },
+                //     error: function (xhr) {
+                //         // Handle errors
+                //     }
+                // });
+            });
+
+            $('#signinForm').submit(function (event) {
+                event.preventDefault(); // Prevent default form submission for signin
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/signin',
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        $('#signinError').text('Login successful').css('color', 'green');
+                        getLocation();
+                    },
+                    error: function (xhr) {
+                        $('#signinError').text(xhr.responseText).css('color', 'red');
+                    }
+                });
+            });
+
+            function getLocation() {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(showPosition, showError);
+                } else {
+                    $('#signinError').text("Geolocation is not supported by this browser.").css('color', 'red');
+                }
+            }
+
+            function showPosition(position) {
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+                $('#location').text('Latitude: ' + latitude + ', Longitude: ' + longitude);
+                getWeather(latitude, longitude);
+            }
+
+            function getWeather(latitude, longitude) {
+              var weatherApiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${openWeatherApiKey}&units=metric`;
+
+              $.get(weatherApiUrl, function(weatherData) {
+                  var weatherDescription = weatherData.weather[0].description;
+                  var temperature = weatherData.main.temp;
+                  $('#weather').text(`Weather: ${weatherDescription}, Temperature: ${temperature} °C`);
+              }).fail(function(jqXHR, textStatus) {
+                  console.log("Request failed: " + textStatus);
+                  console.log(jqXHR.responseText);
+                  $('#weather').text('Failed to retrieve weather data.');
+              });
+          }
+
+
+            function showError(error) {
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        $('#signinError').text("User denied the request for Geolocation.").css('color', 'red');
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        $('#signinError').text("Location information is unavailable.").css('color', 'red');
+                        break;
+                    case error.TIMEOUT:
+                        $('#signinError').text("The request to get user location timed out.").css('color', 'red');
+                        break;
+                    case error.UNKNOWN_ERROR:
+                        $('#signinError').text("An unknown error occurred.").css('color', 'red');
+                        break;
+                }
+            }
+            function getCountryInfo(countryCode) {
+              var countryApiUrl = `https://restcountries.com/v3.1/alpha/${countryCode}`;
+
+              $.get(countryApiUrl, function(countryData) {
+                  var language = Object.values(countryData[0].languages)[0];
+                  var currency = Object.keys(countryData[0].currencies)[0];
+                  $('#language').text(`Language: ${language}`);
+                  $('#currency').text(`Currency: ${currency}`);
+                  // For facts, use a similar method depending on the facts API you choose
+              }).fail(function() {
+                  $('#language').text('Failed to retrieve country data.');
+                  $('#currency').text('Failed to retrieve country data.');
+              });
+          }
+
+            function getAdditionalInfo(latitude, longitude) {
+                var reverseGeocodeUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+
+                $.get(reverseGeocodeUrl, function(locationData) {
+                    var countryCode = locationData.countryCode;
+                    getCountryInfo(countryCode);
+                    // For local facts, you can call another function here
+                }).fail(function() {
+                    $('#language').text('Failed to retrieve location data.');
+                    $('#currency').text('Failed to retrieve location data.');
+                });
+          }
+
+            function showPosition(position) {
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+                $('#location').text('Latitude: ' + latitude + ', Longitude: ' + longitude);
+                getWeather(latitude, longitude);
+                getAdditionalInfo(latitude, longitude);
+          }
+         
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js')
+                .then(function(registration) {
+                    console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.log('Service Worker registration failed:', error);
+                });
+            }
+
+
+          
+
+        });
+    </script>
+</body>
+</html>
